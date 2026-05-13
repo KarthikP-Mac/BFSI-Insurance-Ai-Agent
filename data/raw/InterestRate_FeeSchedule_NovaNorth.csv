@@ -1,0 +1,62 @@
+product_category,product_name,sub_type,customer_segment,interest_rate_pa,rate_type,processing_fee,prepayment_charges,minimum_amount_inr,maximum_amount_inr,tenure_min_months,tenure_max_months,effective_date,notes
+Fixed Deposit,NovaNorth Super FD,7-14 days,Regular Customer,4.75,Fixed,NIL,1% penalty on applicable rate,5000,99999999,7,14,01-Apr-2025,Senior citizen rate: 5.25% p.a.
+Fixed Deposit,NovaNorth Super FD,7-14 days,Senior Citizen (60+),5.25,Fixed,NIL,1% penalty on applicable rate,5000,99999999,7,14,01-Apr-2025,Additional 0.50% over regular rate
+Fixed Deposit,NovaNorth Super FD,15-45 days,Regular Customer,5.0,Fixed,NIL,1% penalty on applicable rate,5000,99999999,15,45,01-Apr-2025,Senior citizen rate: 5.5% p.a.
+Fixed Deposit,NovaNorth Super FD,15-45 days,Senior Citizen (60+),5.5,Fixed,NIL,1% penalty on applicable rate,5000,99999999,15,45,01-Apr-2025,Additional 0.50% over regular rate
+Fixed Deposit,NovaNorth Super FD,46-90 days,Regular Customer,5.5,Fixed,NIL,1% penalty on applicable rate,5000,99999999,46,90,01-Apr-2025,Senior citizen rate: 6.0% p.a.
+Fixed Deposit,NovaNorth Super FD,46-90 days,Senior Citizen (60+),6.0,Fixed,NIL,1% penalty on applicable rate,5000,99999999,46,90,01-Apr-2025,Additional 0.50% over regular rate
+Fixed Deposit,NovaNorth Super FD,91-180 days,Regular Customer,6.0,Fixed,NIL,1% penalty on applicable rate,5000,99999999,91,180,01-Apr-2025,Senior citizen rate: 6.5% p.a.
+Fixed Deposit,NovaNorth Super FD,91-180 days,Senior Citizen (60+),6.5,Fixed,NIL,1% penalty on applicable rate,5000,99999999,91,180,01-Apr-2025,Additional 0.50% over regular rate
+Fixed Deposit,NovaNorth Super FD,181-364 days,Regular Customer,6.5,Fixed,NIL,1% penalty on applicable rate,5000,99999999,181,364,01-Apr-2025,Senior citizen rate: 7.0% p.a.
+Fixed Deposit,NovaNorth Super FD,181-364 days,Senior Citizen (60+),7.0,Fixed,NIL,1% penalty on applicable rate,5000,99999999,181,364,01-Apr-2025,Additional 0.50% over regular rate
+Fixed Deposit,NovaNorth Super FD,1 year,Regular Customer,7.0,Fixed,NIL,1% penalty on applicable rate,5000,99999999,365,365,01-Apr-2025,Senior citizen rate: 7.5% p.a.
+Fixed Deposit,NovaNorth Super FD,1 year,Senior Citizen (60+),7.5,Fixed,NIL,1% penalty on applicable rate,5000,99999999,365,365,01-Apr-2025,Additional 0.50% over regular rate
+Fixed Deposit,NovaNorth Super FD,1-2 years,Regular Customer,7.0,Fixed,NIL,1% penalty on applicable rate,5000,99999999,366,730,01-Apr-2025,Senior citizen rate: 7.5% p.a.
+Fixed Deposit,NovaNorth Super FD,1-2 years,Senior Citizen (60+),7.5,Fixed,NIL,1% penalty on applicable rate,5000,99999999,366,730,01-Apr-2025,Additional 0.50% over regular rate
+Fixed Deposit,NovaNorth Super FD,2-3 years,Regular Customer,7.1,Fixed,NIL,1% penalty on applicable rate,5000,99999999,731,1095,01-Apr-2025,Senior citizen rate: 7.6% p.a.
+Fixed Deposit,NovaNorth Super FD,2-3 years,Senior Citizen (60+),7.6,Fixed,NIL,1% penalty on applicable rate,5000,99999999,731,1095,01-Apr-2025,Additional 0.50% over regular rate
+Fixed Deposit,NovaNorth Super FD,3-5 years,Regular Customer,7.0,Fixed,NIL,1% penalty on applicable rate,5000,99999999,1096,1825,01-Apr-2025,Senior citizen rate: 7.5% p.a.
+Fixed Deposit,NovaNorth Super FD,3-5 years,Senior Citizen (60+),7.5,Fixed,NIL,1% penalty on applicable rate,5000,99999999,1096,1825,01-Apr-2025,Additional 0.50% over regular rate
+Fixed Deposit,NovaNorth Super FD,5-10 years,Regular Customer,6.8,Fixed,NIL,1% penalty on applicable rate,5000,99999999,1826,3650,01-Apr-2025,Senior citizen rate: 7.3% p.a.
+Fixed Deposit,NovaNorth Super FD,5-10 years,Senior Citizen (60+),7.3,Fixed,NIL,1% penalty on applicable rate,5000,99999999,1826,3650,01-Apr-2025,Additional 0.50% over regular rate
+Fixed Deposit,NovaNorth Super FD,400 days (Special),Regular Customer,7.4,Fixed,NIL,1% penalty on applicable rate,5000,99999999,400,400,01-Apr-2025,Senior citizen rate: 7.9% p.a.
+Fixed Deposit,NovaNorth Super FD,400 days (Special),Senior Citizen (60+),7.9,Fixed,NIL,1% penalty on applicable rate,5000,99999999,400,400,01-Apr-2025,Additional 0.50% over regular rate
+Fixed Deposit,NovaNorth Super FD,777 days (Special),Regular Customer,7.25,Fixed,NIL,1% penalty on applicable rate,5000,99999999,777,777,01-Apr-2025,Senior citizen rate: 7.75% p.a.
+Fixed Deposit,NovaNorth Super FD,777 days (Special),Senior Citizen (60+),7.75,Fixed,NIL,1% penalty on applicable rate,5000,99999999,777,777,01-Apr-2025,Additional 0.50% over regular rate
+Home Loan,NovaNorth Griha,"CIBIL 800+, LTV ≤ 75%",Salaried / Self-Employed,8.53,Floating (linked to NovaNorth MCLR),0.50% + GST (min 5000; max 50000),NIL (floating); 2% (fixed rate),500000,100000000,60,360,01-Apr-2025,FOIR max 50%; LTV varies by loan amount
+Home Loan,NovaNorth Griha,"CIBIL 750-799, LTV ≤ 80%",Salaried / Self-Employed,8.66,Floating (linked to NovaNorth MCLR),0.50% + GST (min 5000; max 50000),NIL (floating); 2% (fixed rate),500000,100000000,60,360,01-Apr-2025,FOIR max 50%; LTV varies by loan amount
+Home Loan,NovaNorth Griha,"CIBIL 700-749, LTV ≤ 85%",Salaried / Self-Employed,9.07,Floating (linked to NovaNorth MCLR),0.50% + GST (min 5000; max 50000),NIL (floating); 2% (fixed rate),500000,100000000,60,360,01-Apr-2025,FOIR max 50%; LTV varies by loan amount
+Home Loan,NovaNorth Griha,"CIBIL 650-699, LTV ≤ 90%",Salaried / Self-Employed,9.31,Floating (linked to NovaNorth MCLR),0.50% + GST (min 5000; max 50000),NIL (floating); 2% (fixed rate),500000,100000000,60,360,01-Apr-2025,FOIR max 50%; LTV varies by loan amount
+Home Loan,NovaNorth Griha,Fixed rate (3-year lock-in),Salaried / Self-Employed,9.99,Floating (linked to NovaNorth MCLR),0.50% + GST (min 5000; max 50000),NIL (floating); 2% (fixed rate),500000,100000000,60,360,01-Apr-2025,FOIR max 50%; LTV varies by loan amount
+Personal Loan,NovaNorth Swift Cash,"CIBIL 800+, Category A employer",As per profile,11.67,Fixed,1.0%-2.5% + GST,3% of outstanding (after 6 EMIs),50000,4000000,12,72,01-Apr-2025,FOIR max 55%
+Personal Loan,NovaNorth Swift Cash,"CIBIL 750-799, Category A employer",As per profile,13.34,Fixed,1.0%-2.5% + GST,3% of outstanding (after 6 EMIs),50000,4000000,12,72,01-Apr-2025,FOIR max 55%
+Personal Loan,NovaNorth Swift Cash,"CIBIL 750-799, Category B employer",As per profile,13.63,Fixed,1.0%-2.5% + GST,3% of outstanding (after 6 EMIs),50000,4000000,12,72,01-Apr-2025,FOIR max 55%
+Personal Loan,NovaNorth Swift Cash,"CIBIL 700-749, Category B/C employer",As per profile,15.63,Fixed,1.0%-2.5% + GST,3% of outstanding (after 6 EMIs),50000,4000000,12,72,01-Apr-2025,FOIR max 55%
+Personal Loan,NovaNorth Swift Cash,"CIBIL 700-749, Self-employed professional",As per profile,14.54,Fixed,1.0%-2.5% + GST,3% of outstanding (after 6 EMIs),50000,4000000,12,72,01-Apr-2025,FOIR max 55%
+Personal Loan,NovaNorth Swift Cash,CIBIL < 700 (NBFC referral),As per profile,19.31,Fixed,1.0%-2.5% + GST,3% of outstanding (after 6 EMIs),50000,4000000,12,72,01-Apr-2025,FOIR max 55%
+Auto Loan,NovaNorth Drive,"New car, CIBIL 750+",Salaried / Self-Employed,8.2,Fixed,0.50% + GST (min 2500),"NIL (post 12 EMIs, floating); 2% (fixed)",200000,10000000,12,84,01-Apr-2025,EV: additional 0.25% concession applied
+Auto Loan,NovaNorth Drive,"New car, CIBIL 700-749",Salaried / Self-Employed,8.51,Fixed,0.50% + GST (min 2500),"NIL (post 12 EMIs, floating); 2% (fixed)",200000,10000000,12,84,01-Apr-2025,EV: additional 0.25% concession applied
+Auto Loan,NovaNorth Drive,"New car, CIBIL 680-699",Salaried / Self-Employed,9.1,Fixed,0.50% + GST (min 2500),"NIL (post 12 EMIs, floating); 2% (fixed)",200000,10000000,12,84,01-Apr-2025,EV: additional 0.25% concession applied
+Auto Loan,NovaNorth Drive,"Used car (≤ 3 years), CIBIL 750+",Salaried / Self-Employed,11.15,Fixed,0.50% + GST (min 2500),"NIL (post 12 EMIs, floating); 2% (fixed)",100000,3000000,12,60,01-Apr-2025,EV: additional 0.25% concession applied
+Auto Loan,NovaNorth Drive,"Used car (≤ 5 years), CIBIL 700-749",Salaried / Self-Employed,12.32,Fixed,0.50% + GST (min 2500),"NIL (post 12 EMIs, floating); 2% (fixed)",100000,3000000,12,60,01-Apr-2025,EV: additional 0.25% concession applied
+Auto Loan,NovaNorth Drive,"Electric vehicle (EV), CIBIL 750+",Salaried / Self-Employed,7.78,Fixed,0.50% + GST (min 2500),"NIL (post 12 EMIs, floating); 2% (fixed)",200000,10000000,12,84,01-Apr-2025,EV: additional 0.25% concession applied
+Education Loan,NovaNorth Vidya,India - No collateral (up to 10L),Student (co-applicant: parent),11.38,Fixed,NIL (up to 4L); 1% + GST (above),NIL,50000,10000000,6,240,01-Apr-2025,Moratorium: course + 6 months; 0.50% concession for females
+Education Loan,NovaNorth Vidya,India - With collateral (10L-50L),Student (co-applicant: parent),10.71,Fixed,NIL (up to 4L); 1% + GST (above),NIL,50000,10000000,6,240,01-Apr-2025,Moratorium: course + 6 months; 0.50% concession for females
+Education Loan,NovaNorth Vidya,Abroad - With collateral (up to 1Cr),Student (co-applicant: parent),9.76,Fixed,NIL (up to 4L); 1% + GST (above),NIL,50000,10000000,6,240,01-Apr-2025,Moratorium: course + 6 months; 0.50% concession for females
+NRI Products,NovaNorth Global Connect,NRE Savings,NRI,4.2,Fixed/As applicable,NIL,NIL for NRE/NRO FD (post 7 days),1000,99999999,0,0,01-Apr-2025,Tax status: Exempt
+NRI Products,NovaNorth Global Connect,NRO Savings,NRI,4.02,Fixed/As applicable,NIL,NIL for NRE/NRO FD (post 7 days),1000,99999999,0,0,01-Apr-2025,Tax status: TDS 30% (DTAA may reduce)
+NRI Products,NovaNorth Global Connect,NRE FD 1 year,NRI,7.17,Fixed/As applicable,NIL,NIL for NRE/NRO FD (post 7 days),1000,99999999,12,120,01-Apr-2025,Tax status: Exempt
+NRI Products,NovaNorth Global Connect,NRE FD 2 years,NRI,7.18,Fixed/As applicable,NIL,NIL for NRE/NRO FD (post 7 days),1000,99999999,12,120,01-Apr-2025,Tax status: Exempt
+NRI Products,NovaNorth Global Connect,NRO FD 1 year,NRI,7.48,Fixed/As applicable,NIL,NIL for NRE/NRO FD (post 7 days),1000,99999999,12,120,01-Apr-2025,Tax status: TDS 30% (DTAA may reduce)
+NRI Products,NovaNorth Global Connect,FCNR USD 1 year,NRI,5.2,Fixed/As applicable,NIL,NIL for NRE/NRO FD (post 7 days),1000,99999999,12,120,01-Apr-2025,Tax status: Exempt
+NRI Products,NovaNorth Global Connect,FCNR USD 2 years,NRI,5.1,Fixed/As applicable,NIL,NIL for NRE/NRO FD (post 7 days),1000,99999999,12,120,01-Apr-2025,Tax status: Exempt
+NRI Products,NovaNorth Global Connect,FCNR USD 3 years,NRI,4.9,Fixed/As applicable,NIL,NIL for NRE/NRO FD (post 7 days),1000,99999999,12,120,01-Apr-2025,Tax status: Exempt
+NRI Products,NovaNorth Global Connect,FCNR GBP 1 year,NRI,4.8,Fixed/As applicable,NIL,NIL for NRE/NRO FD (post 7 days),1000,99999999,12,120,01-Apr-2025,Tax status: Exempt
+NRI Products,NovaNorth Global Connect,FCNR EUR 1 year,NRI,3.5,Fixed/As applicable,NIL,NIL for NRE/NRO FD (post 7 days),1000,99999999,12,120,01-Apr-2025,Tax status: Exempt
+Current Account,NovaNorth Business Edge,"Classic Current (min bal INR 10,000)",Business customers,0.0,N/A (no interest on current account),As per schedule,N/A,10000,99999999,N/A,N/A,01-Apr-2025,Overdraft available for Business Pro and Premium
+Current Account,NovaNorth Business Edge,"Business Pro (min bal INR 25,000)",Business customers,0.0,N/A (no interest on current account),As per schedule,N/A,10000,99999999,N/A,N/A,01-Apr-2025,Overdraft available for Business Pro and Premium
+Current Account,NovaNorth Business Edge,"Premium (min bal INR 75,000)",Business customers,0.0,N/A (no interest on current account),As per schedule,N/A,10000,99999999,N/A,N/A,01-Apr-2025,Overdraft available for Business Pro and Premium
+Savings Account,NovaNorth Savings Plus,Balance up to 1 lakh,All,3.5,Fixed,NIL,N/A,0,100000,N/A,N/A,01-Apr-2025,Quarterly interest credit
+Savings Account,NovaNorth Savings Plus,Balance 1L–10L,All,4.0,Fixed,NIL,N/A,100001,1000000,N/A,N/A,01-Apr-2025,Quarterly interest credit
+Savings Account,NovaNorth Savings Plus,Balance above 10L,All,4.25,Fixed,NIL,N/A,1000001,99999999,N/A,N/A,01-Apr-2025,Quarterly interest credit
+Savings Account,NovaNorth Basic Savings,All balances,All,3.5,Fixed,NIL,N/A,0,99999999,N/A,N/A,01-Apr-2025,No minimum balance; limited transactions

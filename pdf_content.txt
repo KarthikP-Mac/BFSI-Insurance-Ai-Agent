@@ -1,0 +1,578 @@
+GROUP 05 · CAPSTONE PROJECT
+ Banking AI Copilot
+ (BFSI)
+ Loan Eligibility · KYC Queries · Fraud Alerts · Account Policy · Regulatory Compliance
+Domain
+Retail Banking / BFSI
+AI Pattern
+Self-Reflective / Corrective RAG (CRAG) with Compliance Guardrails
+Stack Hint
+LangChain · FastAPI · FAISS · Streamlit · Docker · AWS
+Duration
+Day 19 & 20 — Full Capstone
+Team Size
+4–5 Participants
+Type
+Problem Statement | Architecture Reference | Evaluation Rubric
+ Enterprise AI Training Program · 15-Day Bootcamp Series
+
+CAPSTONE PROJECT 05  |  PROBLEM STATEMENT
+Banking AI Copilot (BFSI)
+Page 2  |  Enterprise AI Training Program  |  Day 19 & 20  |  Confidential – For Participant Use Only
+1. Project Overview
+Group 05 is tasked with building a production-grade Banking AI Copilot for the retail banking and BFSI sector. The
+copilot assists customers and relationship managers with loan eligibility queries, KYC process guidance, fraud alert
+explanations, account policy Q&A, and regulatory compliance information — all grounded in actual banking
+documents and governed by strict regulatory guardrails.
+The key technical differentiator for this project is Self-Reflective RAG — also known as Corrective RAG (CRAG).
+Unlike standard RAG, the agent does not blindly use whatever chunks are retrieved. Instead, it grades the relevance
+of each retrieved chunk, and if the retrieval quality is insufficient, it rewrites the query and re-retrieves — up to two
+reflection iterations — before falling back to web search. This pattern is critical in banking where a low-quality retrieval
+leading to a hallucinated policy answer can cause regulatory and reputational harm.
+Domain
+Retail Banking / BFSI
+AI Pattern
+Self-Reflective RAG (CRAG) — Chunk Grading + Query Rewriting + Web Search Fallback
+User Personas
+Retail Banking Customers · Relationship Managers · Compliance Officers · KYC Agents
+Core Challenge
+Agent must grade its own retrieval quality and self-correct before generating —
+hallucination in banking is a regulatory risk, not just a UX failure
+Final Deliverable
+Live URL (AWS) + Streamlit UI + FastAPI + FAISS + CRAG Pipeline + Evaluation
+Scorecard
+Duration
+Day 19 & 20 (Full capstone + deployment demo)
+Team Size
+4–5 participants
+2. Problem Statement
+Retail banks handle millions of customer queries daily — spanning loan eligibility, KYC documentation requirements,
+interest rate queries, fraud dispute guidance, account terms, and regulatory disclosure obligations. The challenge is
+not just answering these queries — it is answering them accurately and compliantly, with zero tolerance for
+hallucinated policy terms, fabricated regulatory citations, or unsolicited financial advice that could expose the bank to
+liability.
+Standard RAG systems fail in banking when the retrieved context is marginally relevant but not precise enough — the
+LLM fills the gap with plausible but wrong information. A customer told the wrong KYC document requirement wastes
+time and damages trust. A customer given an inaccurate loan eligibility criterion may make a financial decision based
+on false information. The Self-Reflective RAG pattern forces the agent to interrogate its own retrieval quality before
+generating any response.
+■ Your Mission
+Build a banking AI copilot that uses a Self-Reflective RAG pipeline to ensure every response is grounded in
+high-quality retrieved context. The agent must grade each retrieved chunk, rewrite the query if relevance is
+insufficient, and only generate a response when it has verified the retrieval quality — or explicitly flag the response
+as 'low confidence' and surface the web search fallback.
+Every response must pass a regulatory compliance check before reaching the user. The system must demonstrate
+observable self-reflection iterations in LangSmith traces — showing the grading step, the rewrite, and the
+re-retrieval.
+
+CAPSTONE PROJECT 05  |  PROBLEM STATEMENT
+Banking AI Copilot (BFSI)
+Page 3  |  Enterprise AI Training Program  |  Day 19 & 20  |  Confidential – For Participant Use Only
+2.1 Key Pain Points Your System Must Address
+  Loan Eligibility Confusion: Customers misunderstand eligibility criteria (credit score, income ratio, employment
+ type) leading to wasted applications and agent time.
+  KYC Document Uncertainty: Customers and agents frequently need clarification on which documents are
+ required for different account types, customer profiles, or transaction thresholds.
+  Fraud Alert Opacity: When an account is flagged or a transaction is blocked for fraud, customers receive minimal
+ explanation — the copilot must explain the alert type and resolution steps.
+  Interest Rate & Fee Queries: Customers cannot easily get accurate, cited answers on current interest rates,
+ processing fees, penalty charges, and prepayment terms.
+  Regulatory Disclosure Requests: Customers and compliance officers need access to RBI guidelines, Fair
+ Practices Code, DPDPA data handling terms, and AML policy — buried across multiple documents.
+  Hallucination Risk: In banking, a standard RAG system that returns a slightly off-topic chunk can generate a
+ confident but wrong answer — e.g., citing a home loan LTV ratio for a personal loan query.
+  Low-Confidence Query Handling: Queries on very recent regulatory changes or product updates may not be in
+ the document corpus — the system must recognise this and flag it rather than guess.
+■■ Non-Negotiable Regulatory Constraint
+The copilot must NEVER provide personalised financial advice, approve or reject a loan application, or guarantee
+interest rates. All regulatory citations must reference the actual document and clause number. The system must
+include a mandatory disclaimer on every response: 'This information is for guidance only. Please consult your
+relationship manager or refer to official RBI/bank circulars for binding decisions.' Failure to implement this
+disclaimer is an automatic deduction.
+3. Provided Dataset & Knowledge Base
+The following synthetic banking documents and structured datasets are provided. All data is fictional and created for
+training purposes only. No real bank, regulator, or customer data is used.
+ #
+ Document / Dataset
+ Form
+ at
+ Size
+ Primary Use Case
+1
+Retail Loan Products Guide (Home /
+Personal / Auto / Education loans)
+PDF
+35 pp
+Loan types, eligibility criteria, LTV ratios, repayment
+terms
+2
+Account Terms & Conditions (Savings /
+Current / FD / NRI accounts)
+PDF
+52 pp
+Account features, fees, interest rates, closure terms
+3
+KYC & AML Policy Document
+PDF
+28 pp
+KYC requirements by customer type, document
+checklist, periodic re-KYC, AML triggers
+4
+Fair Practices Code & Customer Rights
+Charter
+PDF
+18 pp
+Customer rights, grievance process, fair lending
+principles
+5
+RBI Regulatory Guidelines Summary
+(Key circulars relevant to retail banking)
+PDF
+30 pp
+DPDPA compliance, lending norms, KYC master
+directions, FEMA basics
+6
+Fraud Alert Types & Resolution Guide
+PDF
+16 pp
+Fraud alert categories, what triggers each, customer
+resolution steps
+7
+Interest Rate & Fee Schedule (All
+products as of training data date)
+CSV
+240
+rows
+Product-wise interest rates, processing fees,
+penalties, prepayment charges
+8
+Loan Eligibility Matrix (Income band ×
+employment type × credit score range)
+CSV
+320
+rows
+Indicative eligibility flags and max loan amount
+multipliers by profile
+
+CAPSTONE PROJECT 05  |  PROBLEM STATEMENT
+Banking AI Copilot (BFSI)
+Page 4  |  Enterprise AI Training Program  |  Day 19 & 20  |  Confidential – For Participant Use Only
+ #
+ Document / Dataset
+ Form
+ at
+ Size
+ Primary Use Case
+9
+Digital Banking & UPI Feature Guide
+PDF
+14 pp
+Mobile banking features, UPI limits, NEFT/RTGS
+timelines, dispute resolution
+1
+0
+Banking & Finance Glossary
+PDF
+16 pp
+Definitions: LTV, EMI, CIBIL, NPA, NACH, escrow,
+hypothecation, lien, etc.
+■ CRAG Design Hint
+Your chunk grader must score each retrieved chunk on two dimensions: (1) Topical relevance — does this chunk
+address the query? (2) Specificity — is this chunk precise enough to ground a safe answer, or is it generic policy
+language that could mislead? Think carefully about your grading prompt and scoring threshold. The two CSVs
+(interest rates, loan eligibility matrix) should be handled as structured lookups — not embedded in the vector store
+— to prevent approximate matching returning wrong rate figures.
+4. Expected System Architecture & Data Flow
+This project introduces the Self-Reflective / Corrective RAG (CRAG) pipeline as the core architectural pattern.
+Study both diagrams carefully: Figure 1 shows the 5-layer system architecture, and Figure 2 shows the detailed CRAG
+internal pipeline with the self-reflection loop, chunk grading, query rewriting, and compliance check your team must
+implement.
+User / UI
+Streamlit Chat
+API Layer
+FastAPI Service
+CRAG Agent
+Self-Reflective RAG
+Knowledge Base
+FAISS + Web Search
+Cloud Infra
+AWS Deploy
+Response path (dashed)
+1.
+1. Query
+input
+2.
+2. HTTP
+POST /chat
+3.
+3. CRAG
+execute
+4.
+4. Retrieve
+& reflect
+5.
+5. Respond
+& trace
+System Architecture & Data Flow (5 Layers)
+Agent/LLM layer is a Self-Reflective (CRAG) pipeline; Knowledge Base includes web search fallback
+ Figure 1: Five-layer system architecture — CRAG pipeline replaces the standard RAG agent layer
+
+CAPSTONE PROJECT 05  |  PROBLEM STATEMENT
+Banking AI Copilot (BFSI)
+Page 5  |  Enterprise AI Training Program  |  Day 19 & 20  |  Confidential – For Participant Use Only
+QUERY
+user question
+1. Retrieve
+FAISS top-k + web search fallback
+2. Grade Documents
+LLM scores each chunk: relevant / not relevant
+Relevant
+enough?
+YES
+NO
+3a. Generate
+LLM drafts answer■from relevant chunks
+3b. Rewrite Query
+Reformulate with■broader/different terms
+Self-Reflection
+Loop (max 2x)
+answer draft
+4. Regulatory Compliance Check
+RBI / AML / KYC / DPDPA filter
+5. Guardrail Layer
+PHI / PII / financial advice / hallucination block
+safe response
+END
+SELF-REFLECTION LOGIC
+Each retrieved chunk is scored
+by the LLM on two criteria:
+  (1) Relevance to query
+  (2) Factual groundedness
+If avg score < threshold:
+  → Query rewritten & re-retrieved
+  → Max 2 reflection iterations
+If still insufficient:
+  → Web search fallback triggered
+  → Response flagged 'low confidence'
+Self-Reflective / Corrective RAG (CRAG) Pipeline
+Agent grades its own retrieved chunks and rewrites the query if relevance is insufficient — max 2 reflection loops before web search fallback
+ Figure 2: Self-Reflective RAG (CRAG) pipeline — retrieved chunks are graded by the LLM; low-relevance retrievals trigger query
+ rewriting and re-retrieval (max 2 loops); all outputs pass a regulatory compliance check before the guardrail layer
+4.1 Pipeline Stage Responsibilities
+ Stage
+ Type
+ Responsibility
+1. Retrieve
+RAG Retrieval
+Initial FAISS semantic search returning top-k chunks. Metadata filters applied by
+query intent (loan / account / KYC / fraud / regulatory). Web search tool available
+as fallback source.
+2. Grade
+Documents
+Self-Reflection
+LLM grades each retrieved chunk on relevance (0–1 score) and specificity. Chunks
+below the relevance threshold are discarded. Average score compared against a
+configurable threshold to decide whether to generate or rewrite.
+3a. Generate
+LLM
+Generation
+Triggered when retrieved chunks pass the relevance threshold. LLM generates a
+grounded answer citing specific chunks, clause references, and document names.
+Answer explicitly labelled with confidence level.
+3b. Rewrite Query
+Query
+Rewriting
+Triggered when retrieved chunks fail the relevance threshold. LLM reformulates the
+query with different terminology, broader scope, or more specific intent. Loop
+repeats back to Step 1 (max 2 iterations). After 2 failed iterations, web search
+fallback triggered.
+4. Compliance
+Check
+Regulatory
+Filter
+Dedicated LLM call checks the generated answer against banking regulatory
+constraints: no personalised financial advice, no guaranteed rates, no unsolicited
+investment recommendations, mandatory disclaimer present, no fabricated
+regulatory citations.
+5. Guardrail Layer
+Safety Filter
+Screens for PII/PHI in output, prompt injection in input, credit score fabrication, and
+loan approval language. Adds the mandatory regulatory disclaimer if missing.
+4.2 Required Data Flow (5 Steps)
+
+CAPSTONE PROJECT 05  |  PROBLEM STATEMENT
+Banking AI Copilot (BFSI)
+Page 6  |  Enterprise AI Training Program  |  Day 19 & 20  |  Confidential – For Participant Use Only
+  Step 1 — Query Input: User asks a banking question via the Streamlit chat UI. Session ID and optional query
+ intent tag passed with the request.
+  Step 2 — HTTP POST /chat: FastAPI validates the request and invokes the CRAG pipeline executor.
+ 
+  Step 3 — CRAG Execute: The pipeline retrieves chunks, grades them, and either generates (pass) or rewrites and
+ re-retrieves (fail) — up to 2 reflection iterations.
+  Step 4 — Retrieve & Reflect: FAISS returns chunks; LLM grades each; pipeline decides pass/fail. If 2 iterations
+ fail, web search is triggered and result flagged 'low confidence'.
+  Step 5 — Respond & Trace: Compliance-checked, guardrail-screened response returned to user. Full CRAG
+ trace (retrieve → grade → decision → generate) visible in LangSmith.
+5. Functional Requirements
+Your system must fulfil the following capabilities. Implementation decisions are yours.
+ #
+ Requirement
+ Acceptance Condition
+FR-0
+1
+Loan Eligibility Q&A;
+Given customer profile inputs (income, employment type, credit score range),
+system returns indicative eligibility from the matrix with cited loan product criteria.
+FR-0
+2
+KYC Document Guidance
+Given customer type and account type, system returns the required KYC
+documents with citations from the KYC/AML policy document.
+FR-0
+3
+Fraud Alert Explanation
+Given an alert type or description, system returns the alert category, what triggered
+it, and the resolution steps with document citation.
+FR-0
+4
+Interest Rate & Fee
+Lookup
+System queries the structured rate schedule CSV and returns product-specific
+rates and fees, clearly labelled as indicative and subject to change.
+FR-0
+5
+Regulatory Policy Q&A;
+System answers questions about RBI guidelines, Fair Practices Code, DPDPA
+data rights, and AML obligations with specific clause-level citations.
+FR-0
+6
+Self-Reflection Execution
+For at least one query during the demo, the system must demonstrably execute the
+rewrite-and-re-retrieve loop (visible in LangSmith trace as retrieve → grade →
+rewrite → retrieve → grade → generate).
+FR-0
+7
+Confidence Flagging
+Responses generated after the web search fallback (post 2 failed reflection
+iterations) must be explicitly labelled 'low confidence — based on web search, not
+verified policy document'.
+FR-0
+8
+Regulatory Disclaimer
+Every response must include the mandatory regulatory disclaimer. Responses
+without it must be caught by the guardrail layer and the disclaimer injected.
+FR-0
+9
+Structured Data Lookup
+Interest rate and loan eligibility queries must use the CSV structured lookups — not
+FAISS approximate matching — to prevent rate hallucination.
+FR-1
+0
+Guardrails
+System must block: personalised financial advice, loan approval/rejection
+language, guaranteed rate commitments, credit score fabrication, and prompt
+injection.
+5.1 Non-Functional Requirements
+  Performance: API must respond within 5 seconds at P95 — self-reflection adds latency; optimise grading prompt
+ to minimise token usage.
+  Reflection Observability: Every CRAG execution must produce a LangSmith trace showing the grading scores
+ per chunk, the pass/fail decision, and — where triggered — the rewritten query and re-retrieved chunks.
+  Compliance Auditability: The compliance check stage must log its output (pass/flag) for every response,
+ separately traceable in LangSmith.
+
+CAPSTONE PROJECT 05  |  PROBLEM STATEMENT
+Banking AI Copilot (BFSI)
+Page 7  |  Enterprise AI Training Program  |  Day 19 & 20  |  Confidential – For Participant Use Only
+  Security: All API keys and credentials stored as environment variables. No hardcoded secrets.
+ 
+  Portability: Full application runs via a single Docker command.
+ 
+6. Evaluation Criteria & Scoring Rubric
+Total: 100 points + bonus. Automated scoring via LangSmith + DeepEval combined with live demo assessment.
+ Dimension
+ Weight
+ What Will Be Assessed
+ Minimum Threshold
+RAG Accuracy
+ 20 pts
+Faithfulness and Answer Relevancy on 30-question test
+set. Critically: zero hallucinated regulatory citations or
+fabricated rates.
+Faithfulness ≥ 0.88 Zero
+fabricated citations
+CRAG Pipeline
+Correctness
+ 25 pts
+Self-reflection loop demonstrated in LangSmith trace
+(grade → rewrite → re-retrieve). Confidence flagging
+correct for low-quality retrievals. Web search fallback
+triggered for out-of-corpus query.
+Loop must fire at least
+once Fallback must trigger
+once
+System
+Completeness
+ 20 pts
+All 10 FRs demonstrated live. Each = 2 pts.
+8 of 10 FRs must pass
+Compliance &
+Guardrails
+ 20 pts
+Regulatory disclaimer present on every response (5 pts).
+3 adversarial inputs blocked: financial advice request,
+loan approval request, rate guarantee request (5 pts
+each).
+Disclaimer 100% All 3
+blocked
+Deployment &
+Observability
+ 10 pts
+Live AWS URL, Docker confirmed, LangSmith traces
+show full CRAG pipeline (retrieve → grade → decision →
+generate) per query.
+Public URL live Full trace
+visible
+Presentation
+ 5 pts
+CRAG pipeline diagram explained, self-reflection loop
+demonstrated live, compliance check stage evidenced.
+Must match
+implementation
+6.1 Test Dataset Requirements (30 Q&A; Pairs)
+Loan Eligibility & Products (RAG +
+CSV)
+8 questions
+Mix of loan types; include at least 2 that trigger near-miss retrievals
+to test the reflection loop
+KYC & AML Policy
+6 questions
+Different customer types, account types, and transaction
+thresholds
+Fraud Alerts & Resolution
+5 questions
+Different alert categories including one out-of-corpus query to
+trigger web search fallback
+Interest Rates & Fees (CSV lookup)
+5 questions
+Different products; verify structured CSV lookup vs FAISS
+approximate match
+Regulatory & Compliance Q&A;
+6 questions
+RBI guidelines, DPDPA rights, Fair Practices Code — include
+clause-level citation checks
+■ CRAG-Specific Evaluation Requirement
+Your evaluation must demonstrate the self-reflection loop firing at least once on your test set. Deliberately include
+2–3 queries where the initial retrieval is topically adjacent but not precise (e.g., query about personal loan
+prepayment penalty retrieves a home loan prepayment clause). LangSmith must show: retrieve → grade (score <
+threshold) → rewrite → retrieve → grade (score ≥ threshold) → generate. Also include one out-of-corpus query
+(e.g., a very recent RBI circular) to trigger and demonstrate the web search fallback with confidence flagging.
+
+CAPSTONE PROJECT 05  |  PROBLEM STATEMENT
+Banking AI Copilot (BFSI)
+Page 8  |  Enterprise AI Training Program  |  Day 19 & 20  |  Confidential – For Participant Use Only
+6.2 Creativity & Innovation Bonus (+15 pts)
+Teams are encouraged to go beyond the base requirements:
+  +5 pts — Adaptive Grading Threshold: Instead of a fixed relevance threshold, implement a query-complexity
+ classifier that sets a stricter threshold for regulatory queries and a more lenient one for simple fee lookups.
+  +5 pts — Multi-Turn Loan Advisory Flow: Build a guided multi-turn flow where the agent progressively collects
+ customer profile details (income, employment, credit score) across turns and updates the eligibility lookup
+dynamically.
+  +5 pts — Compliance Dashboard: Add a Streamlit panel that shows compliance check results per session —
+ how many responses passed, how many had the disclaimer injected, how many triggered the reflection loop.
+7. Deliverables & Demo Checklist
+Items marked CRITICAL are required for a passing grade.
+ CRITICAL
+CRAG pipeline demonstrated: LangSmith trace shows retrieve → grade → rewrite → re-retrieve →
+grade → generate for at least one query
+ CRITICAL
+Regulatory disclaimer present on every response shown during the demo — zero exceptions
+ CRITICAL
+Structured CSV lookups used for interest rates and loan eligibility — not FAISS approximate matching
+ CRITICAL
+Policy Q&A; returns clause-level citations: document name, section, and clause or page number
+ CRITICAL
+Application live on public AWS URL during the demo window
+ REQUIRED
+Web search fallback triggered and response correctly labelled 'low confidence' for out-of-corpus query
+ REQUIRED
+Confidence flagging demonstrated: low-confidence responses visually distinguished in the UI
+ REQUIRED
+Compliance check stage evidenced in LangSmith trace as a separate node from guardrails
+ REQUIRED
+DeepEval scorecard: Faithfulness ≥ 0.88, zero fabricated regulatory citations on test set
+ REQUIRED
+All 3 guardrail adversarial inputs blocked: financial advice, loan approval, rate guarantee
+ REQUIRED
+Docker confirmed: build and run demonstrated or evidenced
+ BONUS
+Adaptive grading threshold, multi-turn loan advisory flow, or compliance dashboard (+5 pts each)
+8. Suggested Timeline (Day 19 & 20)
+All phases must be complete before the demo window on Day 20. Phase 2 (CRAG Pipeline) is the most complex —
+implement and test the grading + rewrite loop before building the API or UI.
+ Phase
+ Focus Area
+ Time
+ Box
+ Exit Condition
+Phase 1
+Data ingestion — PDF loading, CSV structured lookup
+setup, FAISS indexing with intent-based metadata
+1.5 hrs
+FAISS built; CSV rate and eligibility
+tables queryable as direct lookups
+
+CAPSTONE PROJECT 05  |  PROBLEM STATEMENT
+Banking AI Copilot (BFSI)
+Page 9  |  Enterprise AI Training Program  |  Day 19 & 20  |  Confidential – For Participant Use Only
+ Phase
+ Focus Area
+ Time
+ Box
+ Exit Condition
+Phase 2
+CRAG pipeline — chunk grader, rewrite node,
+reflection loop (max 2x), web search fallback,
+confidence flagging
+2.5 hrs
+Pipeline demonstrably rewrites and
+re-retrieves for a test query; web
+search fallback fires for out-of-corpus
+query
+Phase 3
+Compliance check stage — dedicated LLM call for
+regulatory constraint validation + disclaimer injection
+1.0 hrs
+Compliance check catches a missing
+disclaimer and injects it; logs pass/fail
+per response
+Phase 4
+API + UI — FastAPI endpoints, Streamlit chat with
+confidence indicator and compliance status panel
+1.0 hrs
+UI shows confidence level, disclaimer,
+and current CRAG iteration count per
+response
+Phase 5
+Guardrails + adversarial testing — 3 financial
+guardrail categories blocked
+0.5 hrs
+All 3 adversarial inputs blocked
+Phase 6
+Evaluation — 30-question test set including
+reflection-triggering and out-of-corpus queries,
+DeepEval run, LangSmith trace review
+1.0 hrs
+Scorecard produced, Faithfulness ≥
+0.88, reflection loop visible in at least 2
+traces
+Phase 7
+Docker build, AWS deploy, URL confirmed, demo
+rehearsal
+1.0 hrs
+Live URL accessible, full CRAG trace
+visible in LangSmith during rehearsal
+■ Final Reminder
+This is a problem statement, not a solution guide. The CRAG pipeline is the hardest technical component in this
+capstone series — it requires careful prompt engineering for the grading step and disciplined loop control. Get
+Phase 2 right before moving on.
+Good luck, Group 05. Build a system that knows what it doesn't know — and is honest about it.

@@ -1,4 +1,15 @@
+---
+title: Banking AI Copilot
+emoji: 🏦
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 8501
+pinned: false
+---
+
 # Banking AI Copilot (CRAG)
+
 
 A Banking AI Copilot utilizing the Corrective Retrieval Augmented Generation (CRAG) pattern for high-accuracy retail banking queries. Built with LangChain, FastAPI, and Streamlit.
 

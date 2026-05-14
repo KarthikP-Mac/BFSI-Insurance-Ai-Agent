@@ -78,12 +78,12 @@ col_chat = st.container()
 with col_chat:
     st.subheader("Chat")
     
-    # Create a container for the chat history with a fixed height to make it scrollable
-    chat_history_container = st.container(height=550)
+    # Create a container for the chat history
+    chat_history_container = st.container()
     
     with chat_history_container:
-        # Display chat messages from history (Reverse order: Newest at the top)
-        for msg in reversed(st.session_state.messages):
+        # Display chat messages from history (Standard order: Oldest to Newest)
+        for msg in st.session_state.messages:
             with st.chat_message(msg["role"]):
                 if msg["role"] == "user":
                     st.markdown("<span class='user-msg-marker'></span>", unsafe_allow_html=True)
@@ -95,60 +95,64 @@ with col_chat:
                         st.warning("⚠️ Low confidence — based on web search, not verified policy document.")
                     if msg.get("compliance") == "flagged":
                         st.error("🚨 Response flagged by compliance guardrails.")
-                    else:
+                    elif "compliance" in msg:
                         st.success("✅ Compliance Check Passed")
                     
                     if msg.get("sources"):
                         st.caption("Sources: " + ", ".join(msg["sources"]))
 
-    # Accept user input (Pinned to bottom of screen by default, but placed outside the history container)
+    # Accept user input (Placed after the history container so it appears at the bottom)
     if prompt := st.chat_input("Ask a banking question (e.g., 'What are the home loan eligibility criteria?')"):
-        # Add user message to chat history
+        
+        # Add user message to session state
         st.session_state.messages.append({"role": "user", "content": prompt})
         
-        with st.chat_message("user"):
-            st.markdown("<span class='user-msg-marker'></span>", unsafe_allow_html=True)
-            st.markdown(prompt)
+        # Render the newly submitted message inside the chat container
+        with chat_history_container:
+            with st.chat_message("user"):
+                st.markdown("<span class='user-msg-marker'></span>", unsafe_allow_html=True)
+                st.markdown(prompt)
 
-        with st.chat_message("assistant"):
-            st.markdown("<span class='assistant-msg-marker'></span>", unsafe_allow_html=True)
-            with st.spinner("Thinking... (Running CRAG Pipeline)"):
-                try:
-                    response = requests.post(API_URL, json={"query": prompt, "session_id": st.session_state.session_id})
-                    response.raise_for_status()
-                    data = response.json()
-                    
-                    answer = data.get("answer", "Error generating answer.")
-                    confidence = data.get("confidence_level", "high")
-                    compliance = data.get("compliance_status", "flagged")
-                    sources = data.get("sources", [])
-                    trace = data.get("trace", {})
-                    
-                    st.markdown(answer)
-                    
-                    if confidence == "low":
-                        st.warning("⚠️ Low confidence — based on web search, not verified policy document.")
-                    if compliance == "flagged":
-                        st.error("🚨 Response flagged by compliance guardrails.")
-                    else:
-                        st.success("✅ Compliance Check Passed")
+            with st.chat_message("assistant"):
+                st.markdown("<span class='assistant-msg-marker'></span>", unsafe_allow_html=True)
+                with st.spinner("Thinking... (Running CRAG Pipeline)"):
+                    try:
+                        response = requests.post(API_URL, json={"query": prompt, "session_id": st.session_state.session_id})
+                        response.raise_for_status()
+                        data = response.json()
                         
-                    if sources:
-                        st.caption("Sources: " + ", ".join(sources))
+                        answer = data.get("answer", "Error generating answer.")
+                        confidence = data.get("confidence_level", "high")
+                        compliance = data.get("compliance_status", "flagged")
+                        sources = data.get("sources", [])
+                        trace = data.get("trace", {})
                         
-                    # Save trace for the side panel
-                    st.session_state.last_trace = trace
+                        st.markdown(answer)
                         
-                    # Add assistant response to chat history
-                    st.session_state.messages.append({
-                        "role": "assistant", 
-                        "content": answer,
-                        "confidence": confidence,
-                        "compliance": compliance,
-                        "sources": sources
-                    })
-                    
-                except requests.exceptions.RequestException as e:
-                    st.error(f"API Error: {e}")
+                        if confidence == "low":
+                            st.warning("⚠️ Low confidence — based on web search, not verified policy document.")
+                        if compliance == "flagged":
+                            st.error("🚨 Response flagged by compliance guardrails.")
+                        else:
+                            st.success("✅ Compliance Check Passed")
+                            
+                        if sources:
+                            st.caption("Sources: " + ", ".join(sources))
+                            
+                        # Save trace for the side panel
+                        st.session_state.last_trace = trace
+                            
+                        # Add assistant response to chat history
+                        st.session_state.messages.append({
+                            "role": "assistant", 
+                            "content": answer,
+                            "confidence": confidence,
+                            "compliance": compliance,
+                            "sources": sources
+                        })
+                        
+                    except requests.exceptions.RequestException as e:
+                        st.error(f"API Error: {e}")
+
 
 

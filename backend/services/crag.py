@@ -34,10 +34,10 @@ def grade_chunk(query: str, chunk_content: str) -> float:
     prompt = ChatPromptTemplate.from_messages([
         ("system", """You are a relevance grader. Grade the retrieved chunk on its relevance to the user query.
 Assess two dimensions:
-1. Topical relevance: Does it address the query?
+1. Topical relevance: Does it address the query? (Note: "penalty", "charges", and "fees" are often used interchangeably in banking).
 2. Specificity: Is it precise enough to ground a safe answer in banking?
-Return a score between 0.0 and 1.0. If the chunk is highly relevant and specific, return > 0.7. If vague or irrelevant, return < 0.7.
-Also set is_relevant to true if score >= 0.7."""),
+Return a score between 0.0 and 1.0. If the chunk is highly relevant and specific, return > 0.6. If vague or irrelevant, return < 0.6.
+Also set is_relevant to true if score >= 0.6."""),
         ("user", "Query: {query}\n\nChunk: {chunk}")
     ])
     try:
@@ -57,7 +57,7 @@ Also set is_relevant to true if score >= 0.7."""),
 def rewrite_query(query: str) -> str:
     llm = get_llm(temperature=0.2)
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a query rewriting assistant for a Banking AI. The original query failed to retrieve relevant documents. Rewrite the query to be broader or use different terminology to improve retrieval."),
+        ("system", "You are a query rewriting assistant for a Banking AI. Rewrite the original query to be broader or use different terminology to improve retrieval. Output ONLY the rewritten query string, nothing else."),
         ("user", "Original query: {query}")
     ])
     try:
@@ -100,7 +100,7 @@ async def run_crag_pipeline(original_query: str, session_id: str) -> Dict[str, A
     # Structured Data Lookup (CSV)
     structured_context = ""
     query_lower = original_query.lower()
-    if any(keyword in query_lower for keyword in ["rate", "fee", "charge", "penalty", "interest", "eligibility", "maximum loan"]):
+    if any(keyword in query_lower for keyword in ["rate", "fee", "charge", "interest", "eligibility", "maximum loan"]):
         trace["steps"].append({"action": "Structured Data Lookup Triggered"})
         if "eligibility" in query_lower or "maximum loan" in query_lower:
             structured_context = _lookup.lookup_loan_eligibility(original_query)
@@ -125,14 +125,21 @@ async def run_crag_pipeline(original_query: str, session_id: str) -> Dict[str, A
             # Grade
             relevant_docs = []
             total_score = 0
+            chunk_previews = []
             for doc in retrieved_docs:
                 score = grade_chunk(original_query, doc.page_content)
                 if score >= settings.GRADING_THRESHOLD:
                     relevant_docs.append(doc)
                 total_score += score
+                chunk_previews.append(doc.page_content[:100].replace("\n", " ") + "...")
                 
             avg_score = total_score / max(len(retrieved_docs), 1)
-            trace["steps"].append({"action": "Grade", "avg_score": avg_score, "passed": avg_score >= settings.GRADING_THRESHOLD})
+            trace["steps"].append({
+                "action": "Grade", 
+                "avg_score": avg_score, 
+                "passed": avg_score >= settings.GRADING_THRESHOLD,
+                "retrieved_snippets": chunk_previews
+            })
             
             if avg_score >= settings.GRADING_THRESHOLD and relevant_docs:
                 final_docs.extend(relevant_docs)
@@ -165,6 +172,8 @@ async def run_crag_pipeline(original_query: str, session_id: str) -> Dict[str, A
     # Compliance Guardrails
     trace["steps"].append({"action": "Compliance Check"})
     compliance_result = check_compliance_and_guardrails(original_query, draft_answer)
+    trace["steps"][-1]["is_compliant"] = compliance_result.get("is_compliant", False)
+    trace["steps"][-1]["reason"] = compliance_result.get("reason", "No reason provided")
     
     return {
         "answer": compliance_result.get("final_answer", draft_answer),

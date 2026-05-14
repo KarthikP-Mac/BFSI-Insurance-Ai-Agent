@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str | None = os.getenv("GROQ_API_KEY")
     
     # CRAG Settings
-    GRADING_THRESHOLD: float = float(os.getenv("GRADING_THRESHOLD", "0.7"))
+    GRADING_THRESHOLD: float = float(os.getenv("GRADING_THRESHOLD", "0.6"))
     
     # API
     PORT: int = int(os.getenv("PORT", "8000"))

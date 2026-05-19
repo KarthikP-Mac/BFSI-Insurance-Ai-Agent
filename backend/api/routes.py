@@ -6,7 +6,7 @@ router = APIRouter()
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
-    result = await run_crag_pipeline(request.query, request.session_id)
+    result = await run_crag_pipeline(request.query, request.session_id, request.threshold)
     return ChatResponse(
         answer=result["answer"],
         confidence_level=result["confidence_level"],

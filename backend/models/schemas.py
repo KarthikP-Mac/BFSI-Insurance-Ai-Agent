@@ -4,6 +4,7 @@ from typing import List, Optional, Dict, Any
 class ChatRequest(BaseModel):
     query: str
     session_id: str
+    threshold: Optional[float] = None
 
 class ChatResponse(BaseModel):
     answer: str

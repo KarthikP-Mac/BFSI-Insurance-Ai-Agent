@@ -45,6 +45,11 @@ st.markdown("""
 
 with st.sidebar:
     st.header("⚙️ Controls")
+    
+    # Threshold slider requested by user
+    threshold = st.slider("🎯 Base Grading Threshold", min_value=0.0, max_value=1.0, value=0.7, step=0.05, 
+                          help="Initial relevance score required for a document chunk to be used. Will decrease automatically on retry.")
+    
     if st.button("🗑️ Clear Chat", type="primary", use_container_width=True):
         st.session_state.messages = []
         st.session_state.session_id = str(uuid.uuid4())
@@ -117,7 +122,7 @@ with col_chat:
                 st.markdown("<span class='assistant-msg-marker'></span>", unsafe_allow_html=True)
                 with st.spinner("Thinking... (Running CRAG Pipeline)"):
                     try:
-                        response = requests.post(API_URL, json={"query": prompt, "session_id": st.session_state.session_id})
+                        response = requests.post(API_URL, json={"query": prompt, "session_id": st.session_state.session_id, "threshold": threshold})
                         response.raise_for_status()
                         data = response.json()
                         

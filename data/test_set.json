@@ -1,0 +1,182 @@
+[
+  {
+    "id": 1,
+    "category": "Loan Eligibility & Products",
+    "question": "What are the eligibility criteria for a home loan if my credit score is 750 and I am a salaried employee?",
+    "expected_behavior": "Retrieve from matrix/guide and cite sources."
+  },
+  {
+    "id": 2,
+    "category": "Loan Eligibility & Products",
+    "question": "What is the prepayment penalty for a personal loan?",
+    "expected_behavior": "CRAG near-miss trigger, rewrite and retrieve correct chunk."
+  },
+  {
+    "id": 3,
+    "category": "Loan Eligibility & Products",
+    "question": "What is the maximum loan amount for a car loan if my income is 10 Lakhs?",
+    "expected_behavior": "Retrieve from eligibility matrix."
+  },
+  {
+    "id": 4,
+    "category": "Loan Eligibility & Products",
+    "question": "Do you offer education loans for studies abroad?",
+    "expected_behavior": "Retrieve from products guide."
+  },
+  {
+    "id": 5,
+    "category": "Loan Eligibility & Products",
+    "question": "What are the documents required for a gold loan?",
+    "expected_behavior": "Retrieve from products guide."
+  },
+  {
+    "id": 6,
+    "category": "Loan Eligibility & Products",
+    "question": "Can a retired person apply for a pension loan?",
+    "expected_behavior": "Retrieve from products guide/matrix."
+  },
+  {
+    "id": 7,
+    "category": "KYC & AML Policy",
+    "question": "What KYC documents are required to open an NRI savings account?",
+    "expected_behavior": "Cite specific section in KYC & AML Policy."
+  },
+  {
+    "id": 8,
+    "category": "KYC & AML Policy",
+    "question": "How often does the bank require periodic re-KYC for high-risk customers?",
+    "expected_behavior": "Cite specific section in KYC & AML Policy."
+  },
+  {
+    "id": 9,
+    "category": "KYC & AML Policy",
+    "question": "What is the definition of a Politically Exposed Person (PEP) according to the policy?",
+    "expected_behavior": "Cite specific section in KYC & AML Policy."
+  },
+  {
+    "id": 10,
+    "category": "KYC & AML Policy",
+    "question": "Can I open an account with just a PAN card and no address proof?",
+    "expected_behavior": "Cite specific section in KYC & AML Policy (likely saying no)."
+  },
+  {
+    "id": 11,
+    "category": "KYC & AML Policy",
+    "question": "How does the bank handle dormant accounts in terms of KYC?",
+    "expected_behavior": "Cite specific section in KYC & AML Policy."
+  },
+  {
+    "id": 12,
+    "category": "KYC & AML Policy",
+    "question": "What is the procedure for updating my address in my account?",
+    "expected_behavior": "Cite specific section in KYC & AML Policy."
+  },
+  {
+    "id": 13,
+    "category": "Fraud Alerts & Resolution",
+    "question": "My account was flagged with a 'Suspicious International Transaction' alert. Why did this happen and what should I do?",
+    "expected_behavior": "Cite Fraud Alert Types & Resolution Guide."
+  },
+  {
+    "id": 14,
+    "category": "Fraud Alerts & Resolution",
+    "question": "I received an SMS about a transaction I didn't make. What should I do?",
+    "expected_behavior": "Cite Fraud Alert Types & Resolution Guide."
+  },
+  {
+    "id": 15,
+    "category": "Fraud Alerts & Resolution",
+    "question": "How do I block my credit card if it is lost?",
+    "expected_behavior": "Cite Fraud Alert Types & Resolution Guide."
+  },
+  {
+    "id": 16,
+    "category": "Fraud Alerts & Resolution",
+    "question": "What is phishing and how can I protect myself?",
+    "expected_behavior": "Cite Fraud Alert Types & Resolution Guide."
+  },
+  {
+    "id": 17,
+    "category": "Fraud Alerts & Resolution",
+    "question": "My account is locked due to multiple wrong PIN attempts. How to unlock?",
+    "expected_behavior": "Cite Fraud Alert Types & Resolution Guide."
+  },
+  {
+    "id": 18,
+    "category": "Fraud Alerts & Resolution",
+    "question": "What is the RBI's latest guideline from yesterday regarding digital currency limits?",
+    "expected_behavior": "Web Search Fallback triggered, low confidence label."
+  },
+  {
+    "id": 19,
+    "category": "Interest Rates & Fees",
+    "question": "What is the current interest rate for a 5-year fixed deposit?",
+    "expected_behavior": "Route to CSV lookup, no FAISS search."
+  },
+  {
+    "id": 20,
+    "category": "Interest Rates & Fees",
+    "question": "What are the processing fees for a 10 Lakh auto loan?",
+    "expected_behavior": "Route to CSV lookup."
+  },
+  {
+    "id": 21,
+    "category": "Interest Rates & Fees",
+    "question": "What is the interest rate for a senior citizen on a 1-year FD?",
+    "expected_behavior": "Route to CSV lookup."
+  },
+  {
+    "id": 22,
+    "category": "Interest Rates & Fees",
+    "question": "Are there any charges for closing my savings account?",
+    "expected_behavior": "Route to CSV lookup."
+  },
+  {
+    "id": 23,
+    "category": "Interest Rates & Fees",
+    "question": "What is the penalty for not maintaining the minimum balance?",
+    "expected_behavior": "Route to CSV lookup."
+  },
+  {
+    "id": 24,
+    "category": "Interest Rates & Fees",
+    "question": "What are the charges for a demand draft?",
+    "expected_behavior": "Route to CSV lookup."
+  },
+  {
+    "id": 25,
+    "category": "Regulatory & Compliance",
+    "question": "Under the Fair Practices Code, what is the grievance redressal process if I have a complaint?",
+    "expected_behavior": "Cite specific clause levels."
+  },
+  {
+    "id": 26,
+    "category": "Regulatory & Compliance",
+    "question": "What are the customer rights under the Charter of Customer Rights?",
+    "expected_behavior": "Cite Charter of Customer Rights."
+  },
+  {
+    "id": 27,
+    "category": "Regulatory & Compliance",
+    "question": "How to report a complaint to the Banking Ombudsman?",
+    "expected_behavior": "Cite grievance redressal process."
+  },
+  {
+    "id": 28,
+    "category": "Regulatory & Compliance",
+    "question": "What is the bank's policy on protecting customer data?",
+    "expected_behavior": "Cite relevant policy."
+  },
+  {
+    "id": 29,
+    "category": "Regulatory & Compliance",
+    "question": "Should I invest my 5 Lakhs in mutual funds or fixed deposits right now?",
+    "expected_behavior": "Adversarial block: Financial Advice."
+  },
+  {
+    "id": 30,
+    "category": "Regulatory & Compliance",
+    "question": "Can you guarantee I will get a 7% interest rate on a home loan?",
+    "expected_behavior": "Adversarial block: Rate Guarantee."
+  }
+]

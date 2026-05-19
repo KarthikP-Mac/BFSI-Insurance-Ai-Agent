@@ -1,5 +1,5 @@
 import os
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.tools import DuckDuckGoSearchRun
@@ -13,6 +13,9 @@ from backend.data.lookup import StructuredLookup
 
 # Initialize structured lookup
 _lookup = StructuredLookup()
+
+# In-memory chat history for multi-turn flow
+_chat_history = {} # session_id -> list of tuples (role, content)
 
 # Load FAISS index lazily
 _vectorstore = None
@@ -54,12 +57,18 @@ Also set is_relevant to true if score >= 0.6."""),
         print(f"Grader error: {e}")
         return 0.0
 
-def rewrite_query(query: str) -> str:
+def rewrite_query(query: str, history: List[Tuple[str, str]]) -> str:
     llm = get_llm(temperature=0.2)
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a query rewriting assistant for a Banking AI. Rewrite the original query to be broader or use different terminology to improve retrieval. Output ONLY the rewritten query string, nothing else."),
-        ("user", "Original query: {query}")
-    ])
+    
+    messages = [
+        ("system", "You are a query rewriting assistant for a Banking AI. Rewrite the original query to be broader or use different terminology to improve retrieval. If the query references previous turns, resolve coreferences. Output ONLY the rewritten query string, nothing else.")
+    ]
+    # Add recent history
+    for role, content in history[-3:]:
+        messages.append((role, content))
+    messages.append(("user", "Original query: {query}"))
+    
+    prompt = ChatPromptTemplate.from_messages(messages)
     try:
         chain = prompt | llm
         result = chain.invoke({"query": query})
@@ -67,7 +76,7 @@ def rewrite_query(query: str) -> str:
     except:
         return query
 
-def generate_answer(query: str, context: str, is_low_confidence: bool = False) -> str:
+def generate_answer(query: str, context: str, history: List[Tuple[str, str]], is_low_confidence: bool = False) -> str:
     llm = get_llm(temperature=0.0)
     system_msg = """You are a Banking AI Copilot. Answer the user query using ONLY the provided context.
 If you don't know the answer based on the context, say so.
@@ -76,22 +85,30 @@ Cite specific clauses, document names, or page numbers when possible."""
     if is_low_confidence:
         system_msg += "\nNOTE: The context provided is from a web search fallback. Explicitly state 'Low confidence — based on web search, not verified policy document.' at the beginning of your response."
         
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_msg),
-        ("user", "Context: {context}\n\nQuery: {query}")
-    ])
+    messages = [("system", system_msg)]
+    # Add recent history
+    for role, content in history[-3:]:
+        messages.append((role, content))
+    messages.append(("user", "Context: {context}\n\nQuery: {query}"))
+    
+    prompt = ChatPromptTemplate.from_messages(messages)
     
     chain = prompt | llm
     result = chain.invoke({"context": context, "query": query})
     return result.content
 
-async def run_crag_pipeline(original_query: str, session_id: str) -> Dict[str, Any]:
+async def run_crag_pipeline(original_query: str, session_id: str, custom_threshold: Optional[float] = None) -> Dict[str, Any]:
     trace = {"steps": []}
     current_query = original_query
     max_retries = 2
     iteration = 0
     
+    base_threshold = custom_threshold if custom_threshold is not None else settings.GRADING_THRESHOLD
+    
     vectorstore = get_vectorstore()
+    
+    # Load chat history
+    history = _chat_history.get(session_id, [])
     
     retrieved_docs = []
     final_docs = []
@@ -116,7 +133,10 @@ async def run_crag_pipeline(original_query: str, session_id: str) -> Dict[str, A
 
     if vectorstore is not None and not final_docs:
         while iteration <= max_retries:
-            trace["steps"].append({"action": f"Retrieve iteration {iteration}", "query": current_query})
+            # Adaptive threshold: decrease by 0.1 on each retry
+            current_threshold = max(0.0, base_threshold - (iteration * 0.1))
+            
+            trace["steps"].append({"action": f"Retrieve iteration {iteration}", "query": current_query, "threshold_used": current_threshold})
             
             # Retrieve
             retriever = vectorstore.as_retriever(search_kwargs={"k": 4})
@@ -128,7 +148,7 @@ async def run_crag_pipeline(original_query: str, session_id: str) -> Dict[str, A
             chunk_previews = []
             for doc in retrieved_docs:
                 score = grade_chunk(original_query, doc.page_content)
-                if score >= settings.GRADING_THRESHOLD:
+                if score >= current_threshold:
                     relevant_docs.append(doc)
                 total_score += score
                 chunk_previews.append(doc.page_content[:100].replace("\n", " ") + "...")
@@ -137,17 +157,17 @@ async def run_crag_pipeline(original_query: str, session_id: str) -> Dict[str, A
             trace["steps"].append({
                 "action": "Grade", 
                 "avg_score": avg_score, 
-                "passed": avg_score >= settings.GRADING_THRESHOLD,
+                "passed": avg_score >= current_threshold,
                 "retrieved_snippets": chunk_previews
             })
             
-            if avg_score >= settings.GRADING_THRESHOLD and relevant_docs:
+            if avg_score >= current_threshold and relevant_docs:
                 final_docs.extend(relevant_docs)
                 break
             else:
                 iteration += 1
                 if iteration <= max_retries:
-                    current_query = rewrite_query(current_query)
+                    current_query = rewrite_query(current_query, history)
                     trace["steps"].append({"action": "Rewrite Query", "new_query": current_query})
 
     # Web search fallback
@@ -167,13 +187,18 @@ async def run_crag_pipeline(original_query: str, session_id: str) -> Dict[str, A
     
     # Generate
     trace["steps"].append({"action": "Generate Answer"})
-    draft_answer = generate_answer(original_query, context, is_low_confidence)
+    draft_answer = generate_answer(original_query, context, history, is_low_confidence)
     
     # Compliance Guardrails
     trace["steps"].append({"action": "Compliance Check"})
     compliance_result = check_compliance_and_guardrails(original_query, draft_answer)
     trace["steps"][-1]["is_compliant"] = compliance_result.get("is_compliant", False)
     trace["steps"][-1]["reason"] = compliance_result.get("reason", "No reason provided")
+    
+    # Save history
+    history.append(("user", original_query))
+    history.append(("assistant", compliance_result.get("final_answer", draft_answer)))
+    _chat_history[session_id] = history
     
     return {
         "answer": compliance_result.get("final_answer", draft_answer),

@@ -1,5 +1,9 @@
 import os
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
+
+# Load environment variables from .env file into os.environ for LangChain
+load_dotenv()
 
 class Settings(BaseSettings):
     # LLM Settings
@@ -18,5 +22,6 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()

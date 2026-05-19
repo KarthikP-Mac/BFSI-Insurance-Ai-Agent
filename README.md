@@ -21,6 +21,27 @@ A Banking AI Copilot utilizing the Corrective Retrieval Augmented Generation (CR
 - **Multi-LLM Support**: Supports both OpenAI and Anthropic through environment variables.
 - **Trace Observability**: Full pipeline steps visible in the Streamlit UI.
 
+## CRAG Pipeline Flow
+
+```mermaid
+graph TD
+    A[User Query] --> B{Structured Data Lookup}
+    B -- Found --> C[Generate Answer with Structured Data]
+    B -- Not Found --> D[Vector Store Retrieval FAISS]
+    D --> E[Grade Chunks]
+    E --> F{Relevance Score >= Threshold?}
+    F -- Yes --> G[Generate Answer with Context]
+    F -- No --> H{Iteration < Max Retries?}
+    H -- Yes --> I[Rewrite Query]
+    I --> D
+    H -- No --> J[Web Search Fallback]
+    J --> G
+    C --> K[Compliance Guardrails]
+    G --> K
+    K --> L[Final Answer with Disclaimer]
+```
+
+
 ## Setup Instructions
 
 1. Clone the repository.
